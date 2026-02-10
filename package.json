@@ -1,0 +1,36 @@
+{
+  "name": "bibleai-server",
+  "version": "1.0.0",
+  "description": "API service for Bible AI web app, which utilizes AI for Bible reading",
+  "keywords": [
+    "bible",
+    "ai",
+    "node",
+    "express",
+    "openAI"
+  ],
+  "homepage": "https://github.com/minhyeong-joe/bible-ai-server#readme",
+  "bugs": {
+    "url": "https://github.com/minhyeong-joe/bible-ai-server/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/minhyeong-joe/bible-ai-server.git"
+  },
+  "license": "ISC",
+  "author": "Minhyeong Joe",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon index.js",
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "cors": "^2.8.6",
+    "dotenv": "^17.2.4",
+    "express": "^5.2.1",
+    "nodemon": "^3.1.11",
+    "openai": "^6.19.0"
+  }
+}
