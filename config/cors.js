@@ -5,6 +5,6 @@ dotenv.config();
 export default {
     origin: process.env.UI_URL,
     methods: ['POST'],
-    allowedHeaders: ['Content-Type'],
+    allowedHeaders: ['Content-Type', 'X-API-Key'],
     credentials: true
 };
