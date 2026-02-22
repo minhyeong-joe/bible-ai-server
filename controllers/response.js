@@ -19,7 +19,7 @@ const getAIResponse = async (req, res) => {
 	}
 
 	console.log(
-		`Received request for AI response: ${version}/${book}/${chapter} (${language}, ${type})`,
+		`Received request for AI response: ${version}/${book}/${chapter} (${language}, ${type}, API v${process.env.OPENAI_PROMPT_VERSION || "0"})`,
 	);
 
 	// check DB for AI response for given version/book/chapter/type/language
@@ -34,7 +34,7 @@ const getAIResponse = async (req, res) => {
 
 	if (cached) {
 		console.log(
-			`[AIResponseCache] found ${version}/${book}/${chapter} (${language}, ${type})`,
+			`[AIResponseCache] found ${version}/${book}/${chapter} (${language}, ${type}, API v${process.env.OPENAI_PROMPT_VERSION || "0"})`,
 		);
 		return res.json({ response: cached.response });
 	}
