@@ -1,10 +1,9 @@
 import mongoose from "mongoose";
 
-const TYPES = ["reflection", "context"];
+const TYPES = ["devotion"];
 
 const ResponseSchema = new mongoose.Schema(
 	{
-		version: { type: String, required: true },
 		book: { type: String, required: true },
 		chapter: { type: Number, required: true },
 		language: { type: String, required: true },
@@ -16,7 +15,6 @@ const ResponseSchema = new mongoose.Schema(
 );
 
 ResponseSchema.index({
-	version: 1,
 	book: 1,
 	chapter: 1,
 	language: 1,
