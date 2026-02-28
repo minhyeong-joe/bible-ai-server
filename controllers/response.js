@@ -29,11 +29,24 @@ const getAIResponse = async (req, res) => {
 	if (!req.body) {
 		return res.status(400).json({ error: "Request body is missing" });
 	}
-	const { book, chapter, type, language, question, use_cache, verses, previous_response_id } = req.body;
+	const {
+		book,
+		chapter,
+		type,
+		language,
+		question,
+		use_cache,
+		verses,
+		previous_response_id,
+	} = req.body;
 	if (!book || !chapter || !type || !language) {
 		return res.status(400).json({
 			error: "Missing required fields: book, chapter, type, language",
 		});
+	}
+	let prompt_language = language;
+	if (language === "中文") {
+		prompt_language = "Traditional Chinese";
 	}
 	if (!Object.values(TYPES).includes(type)) {
 		return res.status(400).json({
@@ -59,7 +72,7 @@ const getAIResponse = async (req, res) => {
 	}
 
 	console.log(
-		`Received request for AI response: ${book}/${chapter} (${language}, ${type}, cache=${!bypassCache}, API v${process.env.OPENAI_PROMPT_VERSION || "0"})`,
+		`Received request for AI response: ${book}/${chapter} (${prompt_language}, ${type}, cache=${!bypassCache}, API v${process.env.OPENAI_PROMPT_VERSION || "0"})`,
 	);
 
 	// Check DB cache (devotion only, skipped when bypassCache)
@@ -67,14 +80,14 @@ const getAIResponse = async (req, res) => {
 		const cached = await AIResponse.findOne({
 			book,
 			chapter,
-			language,
+			prompt_language,
 			type,
 			api_version: process.env.OPENAI_PROMPT_VERSION || "1",
 		});
 
 		if (cached) {
 			console.log(
-				`[AIResponseCache] found ${book}/${chapter} (${language}, ${type}, API v${process.env.OPENAI_PROMPT_VERSION || "0"})`,
+				`[AIResponseCache] found ${book}/${chapter} (${prompt_language}, ${type}, API v${process.env.OPENAI_PROMPT_VERSION || "0"})`,
 			);
 			return res.json({ response: cached.response });
 		}
@@ -92,7 +105,7 @@ const getAIResponse = async (req, res) => {
 	const input = PROMPTS[type]
 		.replace("{book}", book)
 		.replace("{chapter}", chapter)
-		.replace("{language}", language)
+		.replace("{language}", prompt_language)
 		.replace("{passage}", passage)
 		.replace("{user_question}", question ?? "");
 	console.log("Generated prompt:", input);
@@ -106,10 +119,16 @@ const getAIResponse = async (req, res) => {
 	if (type !== TYPES.FREEFORM) {
 		const apiVersion = process.env.OPENAI_PROMPT_VERSION || "1";
 		console.log(
-			`[AIResponseCache] ${bypassCache ? "Overwriting" : "Saving"} AI response for ${book}/${chapter} (${language}, ${type}, API v${apiVersion})`,
+			`[AIResponseCache] ${bypassCache ? "Overwriting" : "Saving"} AI response for ${book}/${chapter} (${prompt_language}, ${type}, API v${apiVersion})`,
 		);
 		await AIResponse.findOneAndUpdate(
-			{ book, chapter, language, type, api_version: apiVersion },
+			{
+				book,
+				chapter,
+				language: prompt_language,
+				type,
+				api_version: apiVersion,
+			},
 			{ $set: { response: aiText } },
 			{ upsert: true },
 		);
